@@ -23,10 +23,10 @@ def calcSignalVectorFromAntenna(antennaPos : np.csingle, myPos : np.csingle, wav
 
 def displayPattern():
     # fixed antenna locations
-    ant1Location = -20.  # (-20, 0)
-    ant2Location =  20.  # ( 20, 0)
+    ant1Location = -10.  # (-20, 0)
+    ant2Location =  10.  # ( 20, 0)
 
-    viewWidth    = 800.  # 800 metre view on both sides
+    viewWidth    = 8000.  # 800 metre view on both sides
 
     n = 256 
     x = np.linspace(-viewWidth, viewWidth, n) 
@@ -43,7 +43,24 @@ def displayPattern():
             idx2 = idx2 + 1
         idx1 = idx1 + 1
 
+    plt.figure(1)
     plt.pcolormesh(X, Y, amp, cmap = cm.gray) 
+
+    # plot horizontal axis signal strength
+    amp1 = np.zeros((n,1))
+    amp2 = np.zeros((n,1))
+    idx1 = 0
+    for xx in x:
+        amplitude1 = np.absolute(calcSignalVectorFromAntenna(ant1Location, 1j*xx, 40) + calcSignalVectorFromAntenna(ant2Location, 1j*xx, 40))
+        amp1[idx1] = 20.0*np.log10(amplitude1)
+        amplitude2 = np.absolute(calcSignalVectorFromAntenna(ant1Location, xx, 40) + calcSignalVectorFromAntenna(ant2Location, xx, 40))
+        amp2[idx1] = 20.0*np.log10(amplitude2)
+        idx1 = idx1 + 1
+    
+    plt.figure(2)
+    plt.plot(x, amp1, x, amp2)
+    plt.xlabel("distance (m)")
+    plt.ylabel("amplitude (dB)")
     plt.show()
 
 def printSignal(sig : np.csingle):
