@@ -1,6 +1,9 @@
 #!/usr/bin/python3
+# see: https://subscription.packtpub.com/book/big_data_and_business_intelligence/9781849513265/6/ch06lvl1sec68/visualizing-a-2d-scalar-field
 
 import numpy as np;
+from matplotlib import pyplot as plt
+import matplotlib.cm as cm 
 
 # we abuse the complex data type as a 2D vector to simplify things
 # waveLength in metres
@@ -18,6 +21,31 @@ def calcSignalVectorFromAntenna(antennaPos : np.csingle, myPos : np.csingle, wav
 
     return signal
 
+def displayPattern():
+    # fixed antenna locations
+    ant1Location = -20.  # (-20, 0)
+    ant2Location =  20.  # ( 20, 0)
+
+    viewWidth    = 800.  # 800 metre view on both sides
+
+    n = 256 
+    x = np.linspace(-viewWidth, viewWidth, n) 
+    y = np.linspace(-viewWidth, viewWidth, n) 
+    X, Y = np.meshgrid(x, y)
+
+    amp = np.zeros((n,n))
+    idx1 = 0
+    for xx in x:
+        idx2 = 0
+        for yy in y:
+            amplitude = np.absolute(calcSignalVectorFromAntenna(ant1Location, xx + 1.j*yy, 40) + calcSignalVectorFromAntenna(ant2Location, xx + 1.j*yy, 40))
+            amp[idx1, idx2] = 20.0*np.log10(amplitude)
+            idx2 = idx2 + 1
+        idx1 = idx1 + 1
+
+    plt.pcolormesh(X, Y, amp, cmap = cm.gray) 
+    plt.show()
+
 def printSignal(sig : np.csingle):
     print("  amplitude: ", np.absolute(sig))
     print("  angle    : ", np.angle(sig)/np.pi*180.0)
@@ -27,4 +55,6 @@ printSignal(calcSignalVectorFromAntenna(0,20,40))
 
 print("Combined signal from two 40m TX antennas at (-20,0) and (20,0) observed at (0,0)")
 printSignal(calcSignalVectorFromAntenna(-20,0,40) + calcSignalVectorFromAntenna(20,0,40))
+
+displayPattern()
 
