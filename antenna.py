@@ -22,4 +22,5 @@ def printSignal(sig : np.csingle):
     print("  amplitude: ", np.absolute(sig))
     print("  angle    : ", np.angle(sig)/np.pi*180.0)
 
+print("Signal at a distance of 40m from an antenna TXing on 40m")
 printSignal(calcSignalVectorFromAntenna(0,40,40))
